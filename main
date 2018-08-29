@@ -1,0 +1,197 @@
+#include <graphics.h>
+#include<stdio.h>
+#include<dos.h>
+#include<conio.h>
+#include<iostream.h>
+#include<stdlib.h>
+#include<time.h>
+int  grid[3][3]; 
+double midx,midy;
+void draw_circle_ingrid(double x,double y,double radius,double offset){
+	radius*=0.5;
+	double centre_x=2*offset*(y)+midx-2*offset;
+	double centre_y=2*offset*(x)+midy-2*offset;
+	setfillstyle(HATCH_FILL,RED);
+	setcolor(GREEN);
+	fillellipse(centre_x,centre_y,radius,radius);
+	//Change RED to WHITE.
+	//floodfill(x,y,LIGHTBLUE);
+
+}	
+void draw_cross(double x,double y,double offset){
+	double centre_x=2*offset*(y)+midx-2*offset;
+	double centre_y=2*offset*(x)+midy-2*offset;	
+	offset*=0.5;
+	setcolor(LIGHTGREEN);
+	line(centre_x-offset,centre_y+offset,centre_x+offset,centre_y-offset);
+	line(centre_x-offset,centre_y-offset,centre_x+offset,centre_y+offset);
+}
+void update(int x,int y,int player){
+	if(player==1)
+		grid[x][y]=1;
+	else grid[x][y]=2;
+	
+}
+int  check(){
+	int i;
+	for( i=0;i<3;i++){
+			if(grid[i][0]==grid[i][1] && grid[i][1]==grid[i][2] && grid[i][2]!=-1)return grid[i][2];
+	}	
+	for( i=0;i<3;i++){
+			if(grid[0][i]==grid[1][i] && grid[1][i]==grid[2][i] && grid[2][i]!=-1)return grid[2][i];
+	}
+	if(grid[0][0]==grid[1][1] && grid[1][1]==grid[2][2] && grid[2][2]!=-1)return grid[2][2];
+	if(grid[0][2]==grid[1][1] && grid[1][1]==grid[2][0] && grid[2][0]!=-1)return grid[2][0];
+	return 0;
+}	
+void main()
+{
+   int gd = DETECT, gm;
+	
+   initgraph(&gd, &gm, "C:\\TC\\BGI");
+	
+   /*for ( c = 0 ; c < 5 ; c++ )
+   {
+       setlinestyle(c, 0, 2);
+ 
+       line(x, y, x+200, y);
+       y = y + 25;
+   }*/
+   
+   int i,j;
+   for(i=0;i<3;i++){
+	   for(j=0;j<3;j++){
+		   grid[i][j]=-1;
+		   
+	   }
+	   
+   }
+   int x=getmaxx()/2;
+   int y=getmaxy()/2;
+   midx=x;
+   midy=y;
+   int offset=x/6;
+   int line_thickness=3;
+   int vertical_line_first_x=x-offset;
+   int vertical_line_second_x=x+offset;
+   //int vertical_line_size=3*offset;
+   setcolor(LIGHTBLUE);
+   setlinestyle(0,0,line_thickness);
+   int horiz_offset =offset;
+   int vertical_line_first_y = y-3*offset;
+   int vertical_line_second_y = y+3*offset;
+   line(vertical_line_first_x,vertical_line_first_y ,vertical_line_first_x,vertical_line_second_y);
+   line(vertical_line_second_x,vertical_line_first_y ,vertical_line_second_x,vertical_line_second_y);
+   
+   int horiz_line_first_y = y-horiz_offset;
+   int horiz_line_second_y = y+horiz_offset;
+   int horiz_line_first_x = x-3*offset;
+   int horiz_line_second_x = x+3*offset;
+   line(horiz_line_second_x,horiz_line_first_y ,horiz_line_first_x,horiz_line_first_y);	
+   line(horiz_line_second_x,horiz_line_second_y ,horiz_line_first_x,horiz_line_second_y);
+
+   settextstyle(3,HORIZ_DIR,3);
+   setcolor(LIGHTRED);
+   outtextxy(midx-5*offset,midy-4*offset,"PLAYER 1");
+   
+   settextstyle(4,HORIZ_DIR,3);
+   setcolor(LIGHTBLUE);
+   outtextxy(midx+3*offset,midy-4*offset,"PLAYER 2");
+   srand(time(NULL));
+   //comm&& for circle :: draw_circle_ingrid(x,y,offset,offset);
+   
+   //comm&& for cross :: draw_cross(0,0,offset);
+   for(i=1;i<=9;i++){
+	   if(i%2){
+		   int h,v;
+		   printf(">>");
+		   scanf("%d%d",&h,&v);
+		   printf("\n");
+		   char s[5];
+		   s[0]=s[1]='>';
+		   s[2]=48+h;
+		   s[3]=' ';
+		   s[4]=48+v;
+		   h--;
+		   v--;
+		   settextstyle(3,HORIZ_DIR,3);
+		   setcolor(LIGHTRED);
+		   outtextxy(midx-5*offset,midy-4*offset+0.5*offset*i,s);
+		   update(h,v,i%2);
+		   draw_circle_ingrid(h,v,offset,offset);
+		   int ans;
+		   ans=check();
+		   if(ans==0)continue;
+		   else{
+			   if(ans==1){
+				   //first palyer wins
+				   cleardevice();
+				   settextstyle(4,HORIZ_DIR,5);
+				   setcolor(LIGHTRED);
+				   outtextxy(midx-2*offset,midy,"Player 1 wins");
+			   }else{
+				   //second player wins
+				   cleardevice();
+				   settextstyle(4,HORIZ_DIR,5);
+				   setcolor(LIGHTBLUE);
+				   outtextxy(midx-2*offset,midy,"Player 2 wins");
+			   }
+			   break;
+		   }
+	   }else{
+		   int h,v;
+		   printf(">>");
+		   scanf("%d%d",&h,&v);
+		   /*while(1){
+			   h=1+rand()%3;
+			   v=1+rand()%3;
+			   if(grid[h-1][v-1]==-1)break;
+		   }*/
+		   printf("\n");
+		   char s[5];
+		   s[0]=s[1]='>';
+		   s[2]=48+h;
+		   s[3]=' ';
+		   s[4]=48+v;
+		   h--;
+		   v--;
+		   settextstyle(4,HORIZ_DIR,3);
+		   setcolor(LIGHTBLUE);
+		   
+		   outtextxy(midx+3*offset,midy-4*offset+0.5*offset*i,s);
+		   update(h,v,i%2);
+		   int ans;
+		   draw_cross(h,v,offset);
+		   ans=check();
+		   if(ans==0)continue;
+		   else{
+			   if(ans==1){
+				   //first palyer wins
+				   cleardevice();
+				   settextstyle(4,HORIZ_DIR,5);
+				   setcolor(LIGHTRED);
+				   
+				   outtextxy(midx-2*offset,midy,"Player 1 wins");
+			   }else{
+				   //second player wins
+				   cleardevice();
+				   settextstyle(4,HORIZ_DIR,5);
+				   setcolor(LIGHTBLUE);
+				   outtextxy(midx-2*offset,midy,"Player 2 wins");
+			   }
+			   break;
+		   }
+		   
+	   }
+	   
+   }
+   if(i==10){
+	   cleardevice();
+	   settextstyle(4,HORIZ_DIR,5);
+	   setcolor(LIGHTCYAN);
+	   outtextxy(midx-2*offset,midy,"Match draw");
+	   
+   }
+   getch(); 
+   closegraph();
+}
